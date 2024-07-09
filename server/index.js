@@ -35,4 +35,7 @@ io.on("connection", (socket) => {
     console.log("peer:nego:done", ans);
     io.to(to).emit("peer:nego:final", { from: socket.id, ans });
   });
+  socket.on("ForceDisconnect", () => {
+     socket.disconnect("")
+  }); 
 });

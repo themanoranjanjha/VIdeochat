@@ -1,13 +1,15 @@
-import React, { useEffect, useCallback, useState } from "react";
-import ReactPlayer from "react-player";
+import React, { useEffect, useCallback, useState, useRef } from "react";
 import peer from "../service/peer";
 import { useSocket } from "../context/SocketProvider";
+import ReactPlayer from "react-player";
 
 const RoomPage = () => {
   const socket = useSocket();
   const [remoteSocketId, setRemoteSocketId] = useState(null);
   const [myStream, setMyStream] = useState();
   const [remoteStream, setRemoteStream] = useState();
+  const [cameraOn, setCameraOn] = useState(true);
+  const [audioOn, setAudioOn] = useState(true);
 
   const handleUserJoined = useCallback(({ email, id }) => {
     console.log(`Email ${email} joined room`);
@@ -109,18 +111,80 @@ const RoomPage = () => {
     handleNegoNeedFinal,
   ]);
 
+  const handleDisconnect = useCallback(() => {
+    if (myStream) {
+      myStream.getTracks().forEach((track) => track.stop());
+      setMyStream(null);
+    }
+
+    peer.peer.close();
+    peer.peer = new RTCPeerConnection();
+
+    socket.emit("call:ended", { to: remoteSocketId });
+
+    setRemoteSocketId(null);
+    setRemoteStream(new MediaStream());
+  }, [myStream, remoteSocketId, socket]);
+
+  const toggleCamera = useCallback(async () => {
+    if (cameraOn) {
+      if (myStream) {
+        const videoTrack = myStream.getVideoTracks()[0];
+        if (videoTrack) {
+          videoTrack.stop();
+        }
+      }
+      setCameraOn(false);
+    } else {
+      const newStream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+      });
+      const videoTrack = newStream.getVideoTracks()[0];
+      if (myStream) {
+        const sender = peer.peer.getSenders().find((s) => s.track.kind === "video");
+        if (sender) {
+          sender.replaceTrack(videoTrack);
+        }
+        const audioTrack = myStream.getAudioTracks()[0];
+        const combinedStream = new MediaStream([audioTrack, videoTrack]);
+        setMyStream(combinedStream);
+      } else {
+        setMyStream(newStream);
+      }
+      setCameraOn(true);
+    }
+  }, [cameraOn, myStream]);
+
+  const toggleAudio = useCallback(() => {
+    if (myStream) {
+      const audioTrack = myStream.getAudioTracks()[0];
+      if (audioTrack) {
+        audioTrack.enabled = !audioTrack.enabled;
+        setAudioOn(audioTrack.enabled);
+      }
+    }
+  }, [myStream]);
+
   return (
     <div>
       <h1>Room Page</h1>
       <h4>{remoteSocketId ? "Connected" : "No one in room"}</h4>
       {myStream && <button onClick={sendStreams}>Send Stream</button>}
       {remoteSocketId && <button onClick={handleCallUser}>CALL</button>}
+      <button onClick={handleDisconnect}>Disconnect</button>
+      <button onClick={toggleCamera}>
+        {cameraOn ? "Turn Off Camera" : "Turn On Camera"}
+      </button>
+      <button onClick={toggleAudio}> 
+        {audioOn ? "Mute" : "Unmute"}
+        
+      </button>
       {myStream && (
         <>
           <h1>My Stream</h1>
           <ReactPlayer
             playing
-            muted
+            muted 
             height="100px"
             width="200px"
             url={myStream}
@@ -132,7 +196,7 @@ const RoomPage = () => {
           <h1>Remote Stream</h1>
           <ReactPlayer
             playing
-            muted
+            muted ={false}
             height="100px"
             width="200px"
             url={remoteStream}
