@@ -1,13 +1,266 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* Global settings */
+
+:root{
+  --mainBgColor:rgba(20,20,31,11);
+  --secondaryBgColor:rgba(27,27,39,1);
+  --borderColor1:rgba(40,41,57,1);
+  --borderColor2:rgba(79,86,105,1);
+  --textColorMain:#fff;
+  --textColorSecondary:rgb(226, 227, 232);
+  --themeColorMain:rgba(219,26,90,1);
+  --themeColorSecondary:#386fd2;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
+    'Open Sans', 'Helvetica Neue', sans-serif;
 }
+
+a{
+color: #40e0d0;
+}
+
+body{
+  background-color: var(--mainBgColor);
+  color: var(--textColorMain);
+}
+
+.container{
+max-width: 600px;
+margin:20px auto;
+}
+
+/* Login & Register Pages */
+
+.auth--container{
+height: 100vh;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+.form--wrapper{
+width: 600px;
+width: 600px;
+padding: 2em;
+}
+
+.field--wrapper{
+display: flex;
+flex-direction: column;
+gap: 1em;
+padding: 0.5em 0;
+}
+
+h1,h2,h3,h4,h5,h6,p{
+  text-decoration: none;
+  user-select: none;
+  font: 400;
+}
+
+
+/* Form Input Styling */
+label{
+  font-size: 1.2em;
+  font-weight: 600;
+  cursor: none;
+  user-select: none;
+}
+
+
+input[type="text"], input[type="password"], input[type="email"], textarea{
+background: var(--mainBgColor);
+border: none;
+border-bottom: 1px solid var(--borderColor1);
+padding: 1rem;
+border-radius: 3px;
+width: 100%;
+color: var(--color-light);
+outline: none;
+font-size: 18px;
+text-shadow: none !important;
+}
+
+
+/* Button Styling */
+
+.btn{
+padding: 0.5em 1em;
+border: none;
+border-radius: 2px;
+cursor: pointer;
+transition: 0.3s;
+user-select: none;
+}
+
+.btn--lg{
+padding: 1em 2em;
+}
+
+.btn--main{
+background-color: rgba(219,26,90,1);
+color: #fff;
+}
+
+.btn--secondary{
+background-color: #8db3dd;
+}
+
+.btn:hover{
+opacity: 0.7;
+}
+
+/* Header Styling */
+
+#header--wrapper{
+background-color: var(--mainBgColor);
+padding: 1em;
+display: flex;
+justify-content: space-between;
+border-radius: 10px 10px 0 0;
+border:1px solid var(--borderColor1);
+border-bottom: none;
+user-select: none;
+}
+
+.header--link{
+color: #c7d8eb;
+cursor: pointer;
+transition: 0.3s;
+}
+
+.header--link:hover{
+color: #8db3dd;
+}
+
+/* lobby styling */
+.LobbyW{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.formP{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 25px auto;
+}
+.lobForm{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1em;
+  border-radius: 10px;
+  border: 1px solid var(--borderColor1);
+  width: 330px;
+}
+ input,.roomNo:hover{
+  cursor: pointer;
+  transition: 0.3s;     
+}
+.theCopy{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 4px auto;
+  gap: 10px;
+}
+
+.Cbtn{
+padding: 0.5em 1em;
+border: none;
+border-radius: 2px;
+cursor: pointer;
+transition: 0.3s;
+background-color: #40e0d0;
+user-select: none;
+} 
+.Cbtn--main{
+  background-color: rgba(219,26,90,1);
+  color: #fff;
+}
+.Cbtn:hover{
+  opacity: 0.7;
+  
+}
+.Jbtn--main{
+  background-color: rgb(50, 57, 252);
+  color: #fff;
+} 
+/* Room Styling */
+.roomCont{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  width: 100%;
+  height: 60vh;
+  gap: 3px;
+}
+.room--left{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.video{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+
+}
+.room--right{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+.btnCont{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+
+.Rbtn{
+  padding: 0.4em 0.7em;
+  border: none;
+  border-radius: 1px;
+  border-radius: 10%;
+  cursor: pointer;
+  transition: 0.3s;
+  user-select: none;
+  }
+  
+/* .Rbtn--lg{
+  padding: 1em 2em;
+  }
+   */
+.Rbtn--main{
+  background-color: rgba(219,26,90,1);
+  color: #fff;
+  }
+  .Rbtn:hover{
+    opacity: 0.7;
+    
+  }
+
+
+
+
+
+
+
+

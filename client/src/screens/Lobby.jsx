@@ -1,9 +1,15 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSocket } from "../context/SocketProvider";
+import { nanoid } from "nanoid";
+import Header from "../components/Header";
+import { userAuth } from "../context/AuthContext";
 
 const LobbyScreen = () => {
-  const [email, setEmail] = useState("");
+
+  const {user} = userAuth()
+  console.log(user.email)
+  const [email, setEmail] = useState(user.email);
   const [room, setRoom] = useState("");
 
   const socket = useSocket();
@@ -16,15 +22,15 @@ const LobbyScreen = () => {
     },
     [email, room, socket]
   );
- 
+
   const handleJoinRoom = useCallback(
     (data) => {
-      const { email, room } = data;
+      const { room } = data;
       navigate(`/room/${room}`);
     },
     [navigate]
   );
- 
+
   useEffect(() => {
     socket.on("room:join", handleJoinRoom);
     return () => {
@@ -32,29 +38,50 @@ const LobbyScreen = () => {
     };
   }, [socket, handleJoinRoom]);
 
+  const handleGenerateAndCopyRoomId = () => {
+    const newRoomId = nanoid();
+    setRoom(newRoomId);
+    navigator.clipboard.writeText(newRoomId).then(() => {
+      alert("Room ID generated and copied to clipboard!");
+    }).catch(err => {
+      console.error('Could not copy text: ', err);
+    });
+  };
+
   return (
-    <div>
+    <>
+    <Header />
+    <div className="LobbyW">
       <h1>Lobby</h1>
-      <form onSubmit={handleSubmitForm}>
+      <div className="formP">
+      <form className="lobForm" onSubmit={handleSubmitForm}>
         <label htmlFor="email">Email ID</label>
-        <input
+        <input 
+          className="roomNO"
           type="email"
           id="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => setEmail(e.targe.user.email)}
+          readOnly
         />
         <br />
-        <label htmlFor="room">Room Number</label>
-        <input
+        <label htmlFor="room">Room ID</label>
+        <input 
+          className="roomNO"
           type="text"
           id="room"
           value={room}
           onChange={(e) => setRoom(e.target.value)}
         />
         <br />
-        <button>Join</button>
+        <div className="theCopy">
+        <button type="button" className="Cbtn Cbtn--lg Cbtn--main " onClick={handleGenerateAndCopyRoomId}>Generate & Copy Room ID</button>
+        <button className=" Cbtn Cbtn--lg Jbtn--main" type="submit">Join call</button>
+        </div>
       </form>
+      </div>
     </div>
+    </> 
   );
 };
 

@@ -1,13 +1,14 @@
-import React, { useEffect, useCallback, useState, useRef } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import peer from "../service/peer";
 import { useSocket } from "../context/SocketProvider";
 import ReactPlayer from "react-player";
+import mic from "../Assets/mic.svg"
 
 const RoomPage = () => {
   const socket = useSocket();
   const [remoteSocketId, setRemoteSocketId] = useState(null);
-  const [myStream, setMyStream] = useState();
-  const [remoteStream, setRemoteStream] = useState();
+  const [myStream, setMyStream] = useState(null);
+  const [remoteStream, setRemoteStream] = useState(null);
   const [cameraOn, setCameraOn] = useState(true);
   const [audioOn, setAudioOn] = useState(true);
 
@@ -82,9 +83,9 @@ const RoomPage = () => {
 
   useEffect(() => {
     peer.peer.addEventListener("track", async (ev) => {
-      const remoteStream = ev.streams;
+      const remoteStream = ev.streams[0];
       console.log("GOT TRACKS!!");
-      setRemoteStream(remoteStream[0]);
+      setRemoteStream(remoteStream);
     });
   }, []);
 
@@ -94,7 +95,7 @@ const RoomPage = () => {
     socket.on("call:accepted", handleCallAccepted);
     socket.on("peer:nego:needed", handleNegoNeedIncomming);
     socket.on("peer:nego:final", handleNegoNeedFinal);
-
+    
     return () => {
       socket.off("user:joined", handleUserJoined);
       socket.off("incomming:call", handleIncommingCall);
@@ -116,6 +117,11 @@ const RoomPage = () => {
       myStream.getTracks().forEach((track) => track.stop());
       setMyStream(null);
     }
+    
+    if (remoteStream) {
+      remoteStream.getTracks().forEach((track) => track.stop());
+      setRemoteStream(null);
+    }
 
     peer.peer.close();
     peer.peer = new RTCPeerConnection();
@@ -123,37 +129,17 @@ const RoomPage = () => {
     socket.emit("call:ended", { to: remoteSocketId });
 
     setRemoteSocketId(null);
-    setRemoteStream(new MediaStream());
-  }, [myStream, remoteSocketId, socket]);
+  }, [myStream, remoteStream, remoteSocketId, socket]);
 
-  const toggleCamera = useCallback(async () => {
-    if (cameraOn) {
-      if (myStream) {
-        const videoTrack = myStream.getVideoTracks()[0];
-        if (videoTrack) {
-          videoTrack.stop();
-        }
+  const toggleCamera = useCallback(() => {
+    if (myStream) {
+      const videoTrack = myStream.getVideoTracks()[0];
+      if (videoTrack) {
+        videoTrack.enabled = !videoTrack.enabled;
+        setCameraOn(videoTrack.enabled);
       }
-      setCameraOn(false);
-    } else {
-      const newStream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-      });
-      const videoTrack = newStream.getVideoTracks()[0];
-      if (myStream) {
-        const sender = peer.peer.getSenders().find((s) => s.track.kind === "video");
-        if (sender) {
-          sender.replaceTrack(videoTrack);
-        }
-        const audioTrack = myStream.getAudioTracks()[0];
-        const combinedStream = new MediaStream([audioTrack, videoTrack]);
-        setMyStream(combinedStream);
-      } else {
-        setMyStream(newStream);
-      }
-      setCameraOn(true);
     }
-  }, [cameraOn, myStream]);
+  }, [myStream]);
 
   const toggleAudio = useCallback(() => {
     if (myStream) {
@@ -166,45 +152,66 @@ const RoomPage = () => {
   }, [myStream]);
 
   return (
-    <div>
-      <h1>Room Page</h1>
-      <h4>{remoteSocketId ? "Connected" : "No one in room"}</h4>
-      {myStream && <button onClick={sendStreams}>Send Stream</button>}
-      {remoteSocketId && <button onClick={handleCallUser}>CALL</button>}
-      <button onClick={handleDisconnect}>Disconnect</button>
-      <button onClick={toggleCamera}>
-        {cameraOn ? "Turn Off Camera" : "Turn On Camera"}
-      </button>
-      <button onClick={toggleAudio}> 
-        {audioOn ? "Mute" : "Unmute"}
-        
-      </button>
+    <div RoomWrap>
+      <div Room--container>
+        <div Room--header>
+          <h1>Welcom to the Room </h1>
+          <div>{remoteSocketId ? <p>Connected</p> : <p>Disconnected</p>}</div>
+          <h4>{remoteSocketId ? "Someone is in the room" : "No one in room"}</h4>
+        </div> 
+      <div className="btnCont">
+       {remoteSocketId && <button className="Rbtn Rbtn--main" onClick={handleCallUser}>CALL</button>}
+       {myStream && <button className="Rbtn Rbtn--main" onClick={sendStreams}>Send Stream</button>}
+       {myStream?
+       <div className="btnCont"><button className="Rbtn Rbtn--main" onClick={handleDisconnect}>Disconnect</button>
+           <button className="Rbtn Rbtn--main" onClick={toggleCamera}>
+           {cameraOn ? "Turn Off Camera" : "Turn On Camera"}
+           </button>
+           <button className="Rbtn Rbtn--main" onClick={toggleAudio}>
+             {audioOn ? "Mute" : "Unmute"}
+           </button> </div>:null
+      }
+      </div>
+      <div className="roomCont">
+        <div className="room--left">
       {myStream && (
         <>
           <h1>My Stream</h1>
           <ReactPlayer
+            className="video"
             playing
-            muted 
-            height="100px"
-            width="200px"
+            muted
+            height="300px"
+            width="500px"
             url={myStream}
+            
           />
+          
+          
         </>
+        
       )}
+      </div>
+      <div className="room--right">
       {remoteStream && (
         <>
           <h1>Remote Stream</h1>
           <ReactPlayer
+          className="video"
             playing
-            muted ={false}
-            height="100px"
-            width="200px"
+            height="300px"
+            width="500px"
             url={remoteStream}
           />
+        
         </>
-      )}
-    </div>
+       )}
+      </div>
+     </div>
+    </div> 
+  </div>
   );
 };
+
 
 export default RoomPage;
