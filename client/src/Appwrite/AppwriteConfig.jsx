@@ -5,7 +5,7 @@ export const PROJECT_ID = conf.appwriteProjectId
 // export const COLLECTION_ID_MESSAGES = conf.appwriteCollectionId
 //  console.log("hgfh")
 const client = new Client();
-console.log("project Id", conf.appwriteProjectId)
+
 client
     .setEndpoint('https://cloud.appwrite.io/v1')
     .setProject(PROJECT_ID);

@@ -6,5 +6,5 @@ const conf = {
     // appwriteCollectionId: String(import.meta.env.VITE_APPWRITE_COLLECTION_ID),
     
 }
- console.log(" conf",process.env.REACT_APP_APPWRITE_PROJECT_ID);
+ 
 export default conf
