@@ -1,11 +1,11 @@
 import   { useEffect, useState } from 'react'
-import { userAuth } from '../context/AuthContext'
+import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 
 
 const LoginPage = () => {
-   const {user, handleUserLogin} = userAuth()
+   const {user, handleUserLogin} = useAuth()
    const navigate = useNavigate()
    const [credentials, setCredentials] = useState({
          email: '',

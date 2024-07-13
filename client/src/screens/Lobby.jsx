@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { useSocket } from "../context/SocketProvider";
 import { nanoid } from "nanoid";
 import Header from "../components/Header";
-import { userAuth } from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext";
 
 const LobbyScreen = () => {
 
-  const {user} = userAuth()
+  const {user} = useAuth()
   console.log(user.email)
   const [email, setEmail] = useState(user.email);
   const [room, setRoom] = useState("");
@@ -62,7 +62,7 @@ const LobbyScreen = () => {
           id="email"
           value={email}
           onChange={(e) => setEmail(e.targe.user.email)}
-          readOnly
+         
         />
         <br />
         <label htmlFor="room">Room ID</label>

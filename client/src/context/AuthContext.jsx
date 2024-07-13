@@ -98,5 +98,5 @@ export const AuthProvider = ({children}) => {
 
 }
 
-export const userAuth = () =>{return useContext(AuthContext)}
+export const useAuth = () => useContext(AuthContext)
 export default AuthContext

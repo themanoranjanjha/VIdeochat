@@ -1,9 +1,9 @@
 import React from 'react'
 import { LogOut} from 'react-feather'
-import { userAuth } from '../context/AuthContext'
+import { useAuth } from '../context/AuthContext'
 
 const Header = () => {
-    const {user, handleUserLogout} = userAuth()
+    const {user, handleUserLogout} = useAuth()
 
 //  const LogoutHandle = () =>{
 //     handleUserLogout()

@@ -2,7 +2,7 @@ import React, { useEffect, useCallback, useState } from "react";
 import peer from "../service/peer";
 import { useSocket } from "../context/SocketProvider";
 import ReactPlayer from "react-player";
-import mic from "../Assets/mic.svg"
+
 
 const RoomPage = () => {
   const socket = useSocket();
